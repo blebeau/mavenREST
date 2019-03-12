@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Start Page</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script src="https://code.jquery.com/jquery.js"></script>
+        <script>
+            $(document).ready(function () {
+                function updateList () {
+                    $.getJSON('/mavenproject1/api/productcode',
+                    function (data) {
+                        $('#list').html('');
+                        $.each(data, function(i, item) {
+                                $('#list').append(
+                                        '<p>' + item.prodCode + '</p>');
+                        });
+                    }
+                );
+            }
+            updateList();
+            $('#saveButton').click(function () {
+                $.ajax({
+                    url: '/mavenproject1/api/productcode',
+                    method: 'post',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        prodCode: $('#prodCode').val(),
+                        description: $('#description').val(),
+                        discountCode: $('#discountCode').val()
+                    }),
+                    success: updateList
+                });
+            });
+        });
+        </script>
+    </head>
+    <body>
+        <h1>Hello World!</h1>
+        <a href="/mavenproject1/api/productcode">List of product codes</a>
+        <label>Prod Code: <input id="prodCode" /></label>
+        <label>Description: <input id="description" /></label>
+        <label>Discount code: <input id="discountCode" /></label>
+        <button id="saveButton">Save</button>
+        <div id ="list"></div>
+    </body>
+</html>
