@@ -3,44 +3,146 @@
     <head>
         <title>Start Page</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <script src="https://code.jquery.com/jquery.js"></script>
+        <script src="https://code.jquery.com/jquery.min.js"></script>
         <script>
-            $(document).ready(function () {
-                function updateList () {
-                    $.getJSON('/mavenproject1/api/productcode',
-                    function (data) {
-                        $('#list').html('');
-                        $.each(data, function(i, item) {
-                                $('#list').append(
-                                        '<p>' + item.prodCode + '</p>');
-                        });
-                    }
-                );
-            }
-            updateList();
-            $('#saveButton').click(function () {
-                $.ajax({
-                    url: '/mavenproject1/api/productcode',
-                    method: 'post',
-                    contentType: 'application/json',
-                    data: JSON.stringify({
-                        prodCode: $('#prodCode').val(),
-                        description: $('#description').val(),
-                        discountCode: $('#discountCode').val()
-                    }),
-                    success: updateList
-                });
-            });
-        });
+             $(document).ready(function() {
+                 var baseUrl = '/mavenproject1/api/productCode';
+                 
+                 function getProductCodes() {
+                     
+                             $.ajax({
+                                 url: baseUrl, 
+                                 method: 'get',
+                                 dataType: 'json',
+                                 success: function (data) {
+                                     $.each(data, function(idx, row) {
+                                         newRow = '<tr><td>' + row.prodCode + '</td></td'
+                                         + row.discountCode + '</td></td>' + row.description
+                                         + '</td></tr>';
+                                    $('#product-table').append(newRow);
+                                 });
+                               },
+                                 error: function(err) {
+                                     alert("There was an error! chek logs");
+                                     console.log(err);
+                                 }
+                 });
+             }
+             
+              function addProductCodes() {
+                     newProduct = {
+                         productCode: $('#add-product-code').val(),
+                         discountcode: $('#add-discount-code').val(),
+                         description: $('#add-description').val()
+                     };
+                             $.ajax({
+                                 url: baseUrl, 
+                                 method: 'post',
+                                 dataType: JSON.stringify(newProduct),
+                                 contentType: 'application/json',
+                                 success: getProductCodes,
+                                 error: function(err) {
+                                     alert("There was an error! chek logs");
+                                     console.log(err);
+                                 }
+                 });
+             }
+             
+             function editProductCodes() {
+                     newProduct = {
+                         productCode: $('#add-product-code').val(),
+                         discountcode: $('#add-discount-code').val(),
+                         description: $('#add-description').val()
+                     };
+                             $.ajax({
+                                 url: baseUrl + '/' + $('add-product-code').val(),
+                                 method: 'put',
+                                 dataType: JSON.stringify(newProduct),
+                                 contentType: 'application/json',
+                                 success: getProductCodes,
+                                 error: function(err) {
+                                     alert("There was an error! chek logs");
+                                     console.log(err);
+                                 }
+                 });
+             }
+             
+             function deleteProductCodes() {
+                    $.ajax({
+                                 url: baseUrl + '/' + $('add-product-code').val(), 
+                                 method: 'delete',
+                                 success: getProductCodes,
+                                 error: function(err) {
+                                     alert("There was an error! chek logs");
+                                     console.log(err);
+                                 }
+                 });
+             }
+              getProductCodes();
+    $('#add-product').click(addProductCodes);
+    
+      editProductCodes();
+    $('#edit-product').click(deleteProductCodes);
+    
+    deleteProductCodes();
+    $('#delete-product').click(deleteProductCodes);
+             });
+            
+//            $(document).ready(function () {
+//                function updateList () {
+//                    $.getJSON('/mavenproject1/api/productcode',
+//                    function (data) {
+//                        $('#list').html('');
+//                        $.each(data, function(i, item) {
+//                                $('#list').append(
+//                                        '<p>' + item.prodCode + '</p>');
+//                        });
+//                    }
+//                );
+//            }
+//            updateList();
+//            $('#saveButton').click(function () {
+//                $.ajax({
+//                    url: '/mavenproject1/api/productcode',
+//                    method: 'post',
+//                    contentType: 'application/json',
+//                    data: JSON.stringify({
+//                        prodCode: $('#prodCode').val(),
+//                        description: $('#description').val(),
+//                        discountCode: $('#discountCode').val()
+//                    }),
+//                    success: updateList
+//                });
+//            });
+//        });
+   
+
         </script>
     </head>
     <body>
-        <h1>Hello World!</h1>
-        <a href="/mavenproject1/api/productcode">List of product codes</a>
-        <label>Prod Code: <input id="prodCode" /></label>
-        <label>Description: <input id="description" /></label>
-        <label>Discount code: <input id="discountCode" /></label>
-        <button id="saveButton">Save</button>
-        <div id ="list"></div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Product Code</th>
+                    <th>Discount code</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody id="prduct-table"> 
+            </tbody>
+        </table>
+        
+
+        <div>
+        <label>Product Code: <input id="add-procduct-code" /></label>
+        <label>Discount code: <input id="add-discount-code" /></label>
+        <label>Description: <input id="add-description" /></label>
+        </div>
+        <div>
+        <button id="addButton">Add</button>
+        <button id="editButton">Edit</button>
+        <button id="deleteButton">Delete</button>
+        </div>
+        
     </body>
 </html>
